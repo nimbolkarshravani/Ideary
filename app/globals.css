@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #FAF8F3;
+  --color-ink: #1E2A3A;
+  --color-ink-light: #3a4f6b;
+  --color-highlight-yellow: #FEF3A7;
+  --color-highlight-pink: #FCE4EC;
+  --color-highlight-green: #D4EDDA;
+
+  --font-caveat: var(--font-caveat);
+  --font-patrick: var(--font-patrick);
+  --font-gloria: var(--font-gloria);
+}
+
+html, body {
+  background-color: #FAF8F3;
+  color: #1E2A3A;
+}
+
+/* Dot-grid paper background */
+.dot-grid {
+  background-image: radial-gradient(circle, #c8c0b0 1px, transparent 1px);
+  background-size: 24px 24px;
+}
