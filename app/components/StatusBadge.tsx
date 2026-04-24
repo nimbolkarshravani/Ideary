@@ -3,11 +3,17 @@
 import { useEffect, useRef } from "react";
 import rough from "roughjs";
 
+const fillColors = {
+  yellow: "#FEF3A7",
+  red: "#FFCDD2",
+};
+
 interface StatusBadgeProps {
   label: string;
+  color?: "yellow" | "red";
 }
 
-export default function StatusBadge({ label }: StatusBadgeProps) {
+export default function StatusBadge({ label, color = "yellow" }: StatusBadgeProps) {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
@@ -19,7 +25,7 @@ export default function StatusBadge({ label }: StatusBadgeProps) {
     const rc = rough.svg(svg);
 
     const circle = rc.ellipse(52, 24, 96, 40, {
-      fill: "#FEF3A7",
+      fill: fillColors[color],
       fillStyle: "solid",
       stroke: "#1E2A3A",
       strokeWidth: 1.5,
@@ -41,7 +47,7 @@ export default function StatusBadge({ label }: StatusBadgeProps) {
     text.setAttribute("letter-spacing", "1.5");
     text.textContent = label;
     svg.appendChild(text);
-  }, [label]);
+  }, [label, color]);
 
   return (
     <svg
