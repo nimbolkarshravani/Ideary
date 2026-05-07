@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Caveat, Patrick_Hand, Gloria_Hallelujah } from "next/font/google";
 import "./globals.css";
+import NavBar from "@/app/components/NavBar";
 
 const caveat = Caveat({
   variable: "--font-caveat",
@@ -35,7 +36,10 @@ export default function RootLayout({
       lang="en"
       className={`${caveat.variable} ${patrickHand.variable} ${gloriaHallelujah.variable} h-full`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+          <NavBar />
+          {children}
+        </body>
     </html>
   );
 }
