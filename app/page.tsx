@@ -275,7 +275,7 @@ export default function HomePage() {
 
         {/* CTA */}
         <section style={{ textAlign: "center", marginBottom: 80 }}>
-          <CTAButton href="/eureka/demo">see a Eureka →</CTAButton>
+          <CTAButton href="/eurekas">open my Eurekas</CTAButton>
           <p
             style={{
               fontFamily: "var(--font-patrick)",

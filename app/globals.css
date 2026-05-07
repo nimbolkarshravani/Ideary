@@ -18,8 +18,22 @@ html, body {
   color: #1E2A3A;
 }
 
-/* Dot-grid paper background */
-.dot-grid {
-  background-image: radial-gradient(circle, #c8c0b0 1px, transparent 1px);
-  background-size: 24px 24px;
+/* Ruled notebook lines */
+.ruled-lines {
+  background-color: #ffffff;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 27px,
+    rgba(139, 36, 71, 0.07) 27px,
+    rgba(139, 36, 71, 0.07) 28px
+  );
+  background-size: 100% 28px;
 }
+
+/* Pencil draw animation */
+@keyframes draw-line {
+  from { stroke-dashoffset: 300; }
+  to   { stroke-dashoffset: 0; }
+}
+
