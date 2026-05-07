@@ -27,7 +27,7 @@ export default function NavBar() {
         position: "sticky",
         top: 0,
         zIndex: 50,
-        backgroundColor: "rgba(255,250,248,0.92)",
+        backgroundColor: "rgba(255,255,255,0.92)",
         backdropFilter: "blur(6px)",
         borderBottom: "1px solid rgba(139,36,71,0.08)",
         padding: "12px 24px",
@@ -36,26 +36,26 @@ export default function NavBar() {
         alignItems: "center",
       }}
     >
-      <Link
-        href="/"
-        style={{
-          fontFamily: "var(--font-caveat)",
-          fontSize: "26px",
-          fontWeight: 700,
-          color: INK,
-          textDecoration: "none",
-        }}
-      >
+      <Link href="/" style={{ fontFamily: "var(--font-caveat)", fontSize: "26px", fontWeight: 700, color: INK, textDecoration: "none" }}>
         Ideary
       </Link>
 
       <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-        <Link href="/" style={linkStyle("/")}>
-          home
-        </Link>
+        <Link href="/" style={linkStyle("/")}>home</Link>
         <span style={{ color: BODY, opacity: 0.3, fontSize: "13px" }}>·</span>
-        <Link href="/eurekas" style={linkStyle("/eurekas")}>
-          Eurekas
+        <Link href="/eurekas" style={linkStyle("/eurekas")}>Eurekas</Link>
+        <span style={{ color: BODY, opacity: 0.3, fontSize: "13px" }}>·</span>
+        <Link
+          href="/login"
+          style={{
+            ...linkStyle("/login"),
+            backgroundColor: pathname === "/login" ? "#FFD9E5" : "transparent",
+            padding: "3px 12px",
+            borderRadius: 20,
+            border: `1.5px solid ${pathname === "/login" ? INK : "rgba(139,36,71,0.25)"}`,
+          }}
+        >
+          login
         </Link>
       </div>
     </nav>
