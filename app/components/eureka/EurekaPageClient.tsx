@@ -357,7 +357,13 @@ export default function EurekaPageClient({ initial }: { initial: Eureka }) {
   const [showDelete, setShowDelete] = useState(false);
   const router = useRouter();
 
+  const STATUS_CYCLE: Array<Eureka["status"]> = ["ACTIVE", "PARKED", "DEAD"];
   const statusColor = eureka.status === "DEAD" ? "red" : "yellow";
+  const cycleStatus = () =>
+    setEureka((e) => ({
+      ...e,
+      status: STATUS_CYCLE[(STATUS_CYCLE.indexOf(e.status) + 1) % STATUS_CYCLE.length],
+    }));
 
   const sectionsWithIdx = eureka.sections.map((s, idx) => ({ s, idx }));
   const leftSections = sectionsWithIdx.filter(({ s }) => !s.column || s.column === "left");
@@ -532,7 +538,7 @@ export default function EurekaPageClient({ initial }: { initial: Eureka }) {
             <div style={{ position: "absolute", top: 0, left: 0 }}>
               <LightbulbIcon />
             </div>
-            <div style={{ position: "absolute", top: 4, right: 0, display: "flex", gap: 10, alignItems: "center" }}>
+            <div style={{ position: "absolute", top: 4, right: 0 }}>
               <button
                 onClick={() => setShowDelete(true)}
                 title="Delete this Eureka"
@@ -540,7 +546,6 @@ export default function EurekaPageClient({ initial }: { initial: Eureka }) {
               >
                 🗑
               </button>
-              <StatusBadge label={eureka.status} color={statusColor} />
             </div>
 
             <div style={{ textAlign: "center", paddingTop: 8, paddingBottom: 24 }}>
@@ -562,6 +567,18 @@ export default function EurekaPageClient({ initial }: { initial: Eureka }) {
                   {eureka.oneLiner}
                 </p>
               </EditableBlock>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, marginTop: 16 }}>
+                <button
+                  onClick={cycleStatus}
+                  title="Click to change status"
+                  style={{ background: "none", border: "none", padding: 0, cursor: "pointer", lineHeight: 1 }}
+                >
+                  <StatusBadge label={eureka.status} color={statusColor} />
+                </button>
+                <span style={{ fontFamily: "var(--font-gloria)", fontSize: "10px", color: INK, opacity: 0.3, letterSpacing: "0.03em" }}>
+                  click to change
+                </span>
+              </div>
             </div>
           </div>
 
