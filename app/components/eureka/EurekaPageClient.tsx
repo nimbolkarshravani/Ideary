@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import rough from "roughjs";
 import { useRouter } from "next/navigation";
 import type { Eureka, EurekaSection } from "@/lib/types/eureka";
+import { updateEureka as updateEurekaDb, deleteEureka as deleteEurekaDb, eurekaToDbFields } from "@/lib/db/eurekas";
 import StatusBadge from "@/app/components/StatusBadge";
 import HandDrawnDivider from "@/app/components/HandDrawnDivider";
 import MarginaliaQuote from "@/app/components/MarginaliaQuote";
@@ -460,12 +461,24 @@ function ConversationLink({ url, onSave }: { url?: string; onSave: (v: string) =
 // ── EurekaPageClient ──────────────────────────────────────────────────────────
 
 export default function EurekaPageClient({ initial }: { initial: Eureka }) {
-  const [eureka, setEureka] = useState<Eureka>(initial);
+  const [eureka, _setEureka] = useState<Eureka>(initial);
   const [showDelete, setShowDelete] = useState(false);
   const router = useRouter();
 
-  const STATUS_CYCLE: Array<Eureka["status"]> = ["ACTIVE", "PARKED", "DEAD"];
-  const statusColor = eureka.status === "DEAD" ? "red" : "yellow";
+  // Updates local state and persists to Supabase (fire-and-forget)
+  const applyAndPersist = useCallback(
+    (updater: (e: Eureka) => Eureka) => {
+      const next = updater(eureka);
+      _setEureka(next);
+      void updateEurekaDb(next.id, eurekaToDbFields(next)).catch(console.error);
+    },
+    [eureka],
+  );
+  // Alias so all existing call sites just need s/setEureka/applyAndPersist/
+  const setEureka = applyAndPersist;
+
+  const STATUS_CYCLE: Array<Eureka["status"]> = ["ACTIVE", "PARKED", "DEAD", "REVISIT"];
+  const statusColor: "yellow" | "red" = eureka.status === "DEAD" ? "red" : "yellow";
   const cycleStatus = () =>
     setEureka((e) => ({
       ...e,
@@ -629,7 +642,11 @@ export default function EurekaPageClient({ initial }: { initial: Eureka }) {
     <>
       {showDelete && (
         <DeleteDialog
-          onConfirm={() => { setShowDelete(false); router.push("/eurekas"); }}
+          onConfirm={async () => {
+            setShowDelete(false);
+            await deleteEurekaDb(eureka.id).catch(console.error);
+            router.push("/eurekas");
+          }}
           onCancel={() => setShowDelete(false)}
         />
       )}

@@ -1,10 +1,13 @@
+export const dynamic = "force-dynamic";
+
 import HandDrawnDivider from "@/app/components/HandDrawnDivider";
 import EurekaCard from "@/app/components/EurekaCard";
 import FloatingCapture from "@/app/components/FloatingCapture";
 import HeartDoodle from "@/app/components/home/HeartDoodle";
 import PinkLightbulb from "@/app/components/PinkLightbulb";
 import PencilIllustration from "@/app/components/PencilIllustration";
-import { EUREKAS } from "@/lib/data/eurekas";
+import { getEurekas } from "@/lib/db/eurekas";
+import type { Eureka } from "@/lib/types/eureka";
 
 const INK = "#8B2447";
 const BODY = "#3D2530";
@@ -84,10 +87,19 @@ async function EurekasContent({
   const params = await searchParams;
   const isEmpty = params.empty === "true";
 
-  const total = EUREKAS.length;
-  const parked = EUREKAS.filter((e) => e.status === "PARKED").length;
-  const dead = EUREKAS.filter((e) => e.status === "DEAD").length;
-  const active = EUREKAS.filter((e) => e.status === "ACTIVE").length;
+  let eurekas: Eureka[] = [];
+  if (!isEmpty) {
+    try {
+      eurekas = await getEurekas();
+    } catch {
+      eurekas = [];
+    }
+  }
+
+  const total = eurekas.length;
+  const parked = eurekas.filter((e) => e.status === "PARKED").length;
+  const dead = eurekas.filter((e) => e.status === "DEAD").length;
+  const active = eurekas.filter((e) => e.status === "ACTIVE").length;
 
   return (
     <div
@@ -120,7 +132,7 @@ async function EurekasContent({
 
         <HandDrawnDivider className="my-6" />
 
-        {!isEmpty && (
+        {!isEmpty && eurekas.length > 0 && (
           <>
             {/* Stats strip */}
             <div style={{ display: "flex", gap: 28, flexWrap: "wrap", alignItems: "center", margin: "20px 0 24px" }}>
@@ -140,7 +152,7 @@ async function EurekasContent({
 
             {/* Cards grid */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 32 }}>
-              {EUREKAS.map((e) => (
+              {eurekas.map((e) => (
                 <EurekaCard
                   key={e.id}
                   title={e.title}
@@ -149,14 +161,13 @@ async function EurekasContent({
                   tags={e.tags}
                   date={e.capturedDate}
                   href={`/eureka/${e.id}`}
-                  rotate={e.rotate}
                 />
               ))}
             </div>
           </>
         )}
 
-        {isEmpty && (
+        {(isEmpty || eurekas.length === 0) && (
           <div style={{ display: "flex", justifyContent: "center", paddingTop: 80, paddingBottom: 80 }}>
             <PencilIllustration />
           </div>

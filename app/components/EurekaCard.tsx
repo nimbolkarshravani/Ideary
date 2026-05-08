@@ -4,23 +4,24 @@ import { useEffect, useRef, useState } from "react";
 import rough from "roughjs";
 import Link from "next/link";
 
-const STATUS_COLORS = {
-  PARKED: { fill: "#FEF3A7", stroke: "#8B2447" },
-  DEAD:   { fill: "#FFCDD2", stroke: "#8B2447" },
-  ACTIVE: { fill: "#D4EDDA", stroke: "#8B2447" },
+const STATUS_COLORS: Record<string, { fill: string; stroke: string }> = {
+  PARKED:  { fill: "#FEF3A7", stroke: "#8B2447" },
+  DEAD:    { fill: "#FFCDD2", stroke: "#8B2447" },
+  ACTIVE:  { fill: "#D4EDDA", stroke: "#8B2447" },
+  REVISIT: { fill: "#E8D5FA", stroke: "#8B2447" },
 };
 
 interface EurekaCardProps {
   title: string;
   oneLiner: string;
-  status: "PARKED" | "DEAD" | "ACTIVE";
+  status: string;
   tags: string[];
   date: string;
   href: string;
   rotate?: number;
 }
 
-function MiniStatusDot({ status }: { status: "PARKED" | "DEAD" | "ACTIVE" }) {
+function MiniStatusDot({ status }: { status: string }) {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
