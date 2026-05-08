@@ -29,4 +29,5 @@ export interface Eureka {
   rotate?: number;
   sections: EurekaSection[];
   quotes?: MarginQuote[];
+  conversationUrl?: string;
 }

@@ -350,6 +350,113 @@ function AddSectionMenu({ onAdd }: { onAdd: (s: EurekaSection) => void }) {
   );
 }
 
+// ── ConversationLink ──────────────────────────────────────────────────────────
+
+function ConversationLink({ url, onSave }: { url?: string; onSave: (v: string) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(url || "");
+  const [hovered, setHovered] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editing]);
+
+  const save = () => { onSave(draft.trim()); setEditing(false); };
+  const cancel = () => { setEditing(false); setDraft(url || ""); };
+
+  if (editing) {
+    return (
+      <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 12, justifyContent: "center", flexWrap: "wrap" }}>
+        <input
+          ref={inputRef}
+          type="url"
+          value={draft}
+          placeholder="paste Claude / ChatGPT conversation URL..."
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") cancel();
+            if (e.key === "Enter") save();
+          }}
+          style={{
+            fontFamily: "var(--font-patrick)",
+            fontSize: "13px",
+            color: INK,
+            background: "rgba(254,249,245,0.95)",
+            border: "1.5px solid rgba(30,42,58,0.2)",
+            borderRadius: 2,
+            padding: "5px 10px",
+            outline: "none",
+            width: 320,
+          }}
+        />
+        <button onClick={save} style={BTN_SAVE}>✓ save</button>
+        <button onClick={cancel} style={BTN_CANCEL}>cancel</button>
+      </div>
+    );
+  }
+
+  if (!url) {
+    return (
+      <button
+        onClick={() => { setDraft(""); setEditing(true); }}
+        style={{
+          marginTop: 12,
+          fontFamily: "var(--font-gloria)",
+          fontSize: "11px",
+          color: INK,
+          opacity: 0.3,
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          padding: 0,
+          letterSpacing: "0.02em",
+        }}
+      >
+        + link a conversation
+      </button>
+    );
+  }
+
+  return (
+    <div
+      style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 6, marginTop: 12 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          fontFamily: "var(--font-gloria)",
+          fontSize: "12px",
+          color: MID,
+          opacity: 0.65,
+          textDecoration: "none",
+          letterSpacing: "0.02em",
+          borderBottom: "1px dashed rgba(58,79,107,0.35)",
+          paddingBottom: 1,
+        }}
+      >
+        🔗 original conversation →
+      </a>
+      {hovered && (
+        <button
+          onClick={() => { setDraft(url); setEditing(true); }}
+          title="Edit URL"
+          style={{ background: "none", border: "none", cursor: "pointer", fontSize: "11px", opacity: 0.4, padding: 0, lineHeight: 1 }}
+        >
+          ✏
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ── EurekaPageClient ──────────────────────────────────────────────────────────
 
 export default function EurekaPageClient({ initial }: { initial: Eureka }) {
@@ -529,7 +636,7 @@ export default function EurekaPageClient({ initial }: { initial: Eureka }) {
 
       <div
         className="dot-grid"
-        style={{ minHeight: "100vh", backgroundColor: "#FAF8F3", padding: "48px 40px 64px" }}
+        style={{ minHeight: "100vh", padding: "48px 40px 64px" }}
       >
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
 
@@ -578,6 +685,10 @@ export default function EurekaPageClient({ initial }: { initial: Eureka }) {
                 <span style={{ fontFamily: "var(--font-gloria)", fontSize: "10px", color: INK, opacity: 0.3, letterSpacing: "0.03em" }}>
                   click to change
                 </span>
+                <ConversationLink
+                  url={eureka.conversationUrl}
+                  onSave={(v) => setEureka((e) => ({ ...e, conversationUrl: v || undefined }))}
+                />
               </div>
             </div>
           </div>

@@ -63,7 +63,6 @@ export default function HomePage() {
       className="dot-grid"
       style={{
         minHeight: "100vh",
-        backgroundColor: "#FFFAF8",
         padding: "64px 24px 96px",
       }}
     >
