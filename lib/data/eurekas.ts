@@ -9,6 +9,7 @@ export const EUREKAS: Eureka[] = [
     tags: ["EdTech", "Consumer", "AI-Agents", "Solo-hard"],
     capturedDate: "Apr 24, 2026",
     rotate: -1.2,
+    conversationUrl: "https://claude.ai/chat/",
     sections: [
       {
         kind: "bullets",
