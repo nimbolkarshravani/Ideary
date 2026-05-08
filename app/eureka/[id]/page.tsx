@@ -1,5 +1,7 @@
+export const dynamic = "force-dynamic";
+
 import { notFound } from "next/navigation";
-import { getEureka } from "@/lib/data/eurekas";
+import { getEurekaById } from "@/lib/db/eurekas";
 import EurekaPageClient from "@/app/components/eureka/EurekaPageClient";
 
 export default async function EurekaPage({
@@ -8,7 +10,7 @@ export default async function EurekaPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const eureka = getEureka(id);
+  const eureka = await getEurekaById(id);
   if (!eureka) notFound();
   return <EurekaPageClient initial={eureka} />;
 }
