@@ -1,4 +1,4 @@
-export type EurekaStatus = "ACTIVE" | "PARKED" | "DEAD";
+export type EurekaStatus = "ACTIVE" | "PARKED" | "DEAD" | "REVISIT";
 export type BulletKind = "arrow" | "x" | "dot" | "question";
 
 export interface MarginQuote {
