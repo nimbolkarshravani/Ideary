@@ -4,31 +4,10 @@ import FloatingCapture from "@/app/components/FloatingCapture";
 import HeartDoodle from "@/app/components/home/HeartDoodle";
 import PinkLightbulb from "@/app/components/PinkLightbulb";
 import PencilIllustration from "@/app/components/PencilIllustration";
+import { EUREKAS } from "@/lib/data/eurekas";
 
 const INK = "#8B2447";
 const BODY = "#3D2530";
-
-const EUREKAS = [
-  {
-    title: "AI Video Tutor",
-    oneLiner: "On-demand video teaching with pause-and-ask interactivity",
-    status: "PARKED" as const,
-    tags: ["EdTech", "Consumer", "AI-Agents"],
-    date: "Apr 24, 2026",
-    href: "/eureka/demo",
-    rotate: -1.2,
-  },
-  {
-    title: "Shield / Shegram",
-    oneLiner:
-      "A verified women-only community app for female creators to document harassment and build solidarity",
-    status: "DEAD" as const,
-    tags: ["Consumer", "Social", "Women-Safety"],
-    date: "Apr 3, 2025",
-    href: "/eureka/shield-demo",
-    rotate: 1.5,
-  },
-];
 
 function StatPip({ color }: { color: string }) {
   return (
@@ -94,9 +73,7 @@ export default function EurekasPage({
 }: {
   searchParams: Promise<{ empty?: string }>;
 }) {
-  return (
-    <EurekasContent searchParams={searchParams} />
-  );
+  return <EurekasContent searchParams={searchParams} />;
 }
 
 async function EurekasContent({
@@ -106,6 +83,11 @@ async function EurekasContent({
 }) {
   const params = await searchParams;
   const isEmpty = params.empty === "true";
+
+  const total = EUREKAS.length;
+  const parked = EUREKAS.filter((e) => e.status === "PARKED").length;
+  const dead = EUREKAS.filter((e) => e.status === "DEAD").length;
+  const active = EUREKAS.filter((e) => e.status === "ACTIVE").length;
 
   return (
     <div
@@ -142,10 +124,10 @@ async function EurekasContent({
           <>
             {/* Stats strip */}
             <div style={{ display: "flex", gap: 28, flexWrap: "wrap", alignItems: "center", margin: "20px 0 24px" }}>
-              <Stat count={2} label="captured" pip="#8B2447" />
-              <Stat count={1} label="parked" pip="#F5C518" />
-              <Stat count={1} label="dead" pip="#E57373" />
-              <Stat count={0} label="active" pip="#66BB6A" />
+              <Stat count={total} label="captured" pip="#8B2447" />
+              <Stat count={parked} label="parked" pip="#F5C518" />
+              <Stat count={dead} label="dead" pip="#E57373" />
+              <Stat count={active} label="active" pip="#66BB6A" />
             </div>
 
             {/* Filter chips */}
@@ -159,7 +141,16 @@ async function EurekasContent({
             {/* Cards grid */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 32 }}>
               {EUREKAS.map((e) => (
-                <EurekaCard key={e.href} {...e} />
+                <EurekaCard
+                  key={e.id}
+                  title={e.title}
+                  oneLiner={e.oneLiner}
+                  status={e.status}
+                  tags={e.tags}
+                  date={e.capturedDate}
+                  href={`/eureka/${e.id}`}
+                  rotate={e.rotate}
+                />
               ))}
             </div>
           </>
