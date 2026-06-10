@@ -1,130 +1,251 @@
 # Extraction Eval Results
 
-_Generated: 2026-06-09T14:43:35.547Z_
+**Model:** gemini-2.5-flash  
+**Date:** 2026-06-10  
+**Conversations:** 3  
+**Iterations run:** 1  
+**Best avg score:** 4.89/5.0  
+**Passed threshold (4):** Yes
 
-- Extraction model: `gemini-2.5-flash`
-- Judge model: `gemini-2.5-flash`
-- Threshold: 4.0 · Max iterations: 4
+---
 
-**Outcome:** ✅ Threshold met · Winning iteration **#1** · avg **4.83**
+## Iteration 1 — avg 4.89/5.0
 
-## Score progression
+### PairNotes (4.83/5.0)
 
-| Iteration | faithfulness | completeness | conciseness | honesty | statusAccuracy | voice | **avg** |
-|---|---|---|---|---|---|---|---|
-| 1 | 5.00 | 5.00 | 4.67 | 5.00 | 5.00 | 4.33 | **4.83** |
+**Scores:**
+| Criterion | Score | Reason |
+|-----------|-------|--------|
+| faithfulness | 5 | — |
+| completeness | 5 | — |
+| conciseness | 4 | — |
+| honesty | 5 | — |
+| status_accuracy | 5 | — |
+| voice | 5 | — |
 
-## Iteration 1 — avg 4.83
+**Feedback:** The extraction is excellent, accurately capturing all critical aspects of the conversation in a well-structured and concise format. The 'what_youd_need' section could be slightly more concise, but this is a minor point. This output is ready for the Ideary.
 
-| Test case | faithfulness | completeness | conciseness | honesty | statusAccuracy | voice | notes |
-|---|---|---|---|---|---|---|---|
-| cold-email-saas | 5 | 5 | 5 | 5 | 5 | 4 | The verdict section, while direct, could adopt a more explicit first-person founder's perspective. |
-| local-first-notes | 5 | 5 | 4 | 5 | 5 | 4 | The voice is mostly good, but a few phrases like 'There's a need for...' in SPARK are less direct than ideal. |
-| freelancer-tax-india | 5 | 5 | 5 | 5 | 5 | 5 | This extraction is exceptionally strong across all criteria, with no significant weaknesses. |
-
-<details><summary>Sample extraction (cold-email-saas)</summary>
-
+**Extracted:**
 ```json
 {
-  "title": "AI Cold Email",
-  "oneLiner": "An AI SaaS to write hyper-personalized cold emails by scraping prospect data.",
-  "status": "DEAD",
+  "title": "PairNotes",
+  "one_liner": "An app for couples to share daily voice notes, AI-summarized for a relationship journal.",
+  "status": "parked",
   "tags": [
-    "SaaS",
+    "relationship tech",
+    "couples",
     "AI",
-    "Sales",
-    "B2B"
+    "communication",
+    "subscription"
   ],
-  "sections": [
+  "spark": "Existing voice notes get buried. This app aims to create intentional, daily relationship memories through async voice communication.",
+  "case_for": [
+    "Creates searchable relationship memories.",
+    "Keeps busy couples connected daily.",
+    "Unique voice plus AI summary angle.",
+    "Large market for relationship apps.",
+    "Privacy as a strong competitive moat."
+  ],
+  "case_against": [
+    "Requires consistent dual partner engagement.",
+    "One partner forgetting breaks the loop.",
+    "AI summaries must be excellent, not gimmicky.",
+    "Storing intimate data poses high privacy risk."
+  ],
+  "key_insight": "Strong privacy handling, like local processing, can turn a data risk into a core product feature.",
+  "verdict": "The idea is parked. A clever solution for the dual engagement problem is needed before committing.",
+  "revisit_if": "When a robust solution for the dual engagement mechanic is identified.",
+  "what_youd_need": [
+    "A clever solution for dual engagement."
+  ],
+  "next_step": "Validate core habit with a shared voice memo MVP.",
+  "at_a_glance": [
     {
-      "kind": "prose",
-      "heading": "SPARK",
-      "text": "Build an AI SaaS that writes hyper-personalized cold emails by scraping LinkedIn, recent posts, and company news. Pay per email or monthly seats."
+      "label": "Revenue Model",
+      "value": "$8/month per couple"
     },
     {
-      "kind": "CASE FOR",
-      "heading": "CASE FOR",
-      "bulletKind": "arrow",
-      "items": [
-        "Clear, sellable value prop: 'book more meetings' always sells.",
-        "Emails would be genuinely better due to more signals than basic mail-merge tools."
-      ]
-    },
-    {
-      "kind": "CASE AGAINST",
-      "heading": "CASE AGAINST",
-      "bulletKind": "x",
-      "items": [
-        "Extremely crowded cold email tooling space (Instantly, Smartlead, Clay, Lemlist, Apollo, AI SDR startups).",
-        "Beating 'better personalization' on quality alone is hard to defend; it's a feature, not a company.",
-        "Deliverability is getting worse; Google/Microsoft tightened bulk-sender rules in 2024. AI-generated cold email at volume is a spam target.",
-        "Commodity wrapper: 'scrape + prompt + send' is easily replicable. Margin compressed between LLM providers and sending infrastructure.",
-        "Scraping LinkedIn is a legal gray area; LinkedIn aggressively litigates scrapers, posing platform risk.",
-        "Niching down (e.g., YC startups selling to startups) doesn't fix structural problems and targets a saturated, cold-outreach-averse niche."
-      ]
-    },
-    {
-      "kind": "KEY INSIGHT",
-      "heading": "KEY INSIGHT",
-      "text": "The cold email channel is dying, and this idea would be a thin wrapper in a knife fight with no unfair advantage."
-    },
-    {
-      "kind": "VERDICT",
-      "heading": "VERDICT",
-      "text": "Not worth pursuing. The market is huge, but defensibility and channel trajectory are both working against a solo founder. Fundamental problems with deliverability, commoditization, and legal risk."
-    },
-    {
-      "kind": "REVISIT IF",
-      "heading": "REVISIT IF",
-      "bulletKind": "dot",
-      "items": [
-        "I owned a proprietary data source nobody else has.",
-        "A totally new channel for outreach emerged, not just better copy."
-      ]
+      "label": "Target User",
+      "value": "Busy couples"
     }
   ]
 }
 ```
-</details>
 
-## Winning prompt
+### APIWatch (4.83/5.0)
 
-```text
-You are the extraction engine for Ideary, a tool where a solo founder saves "Eurekas" — short, honest post-mortems of startup ideas they explored with an AI.
+**Scores:**
+| Criterion | Score | Reason |
+|-----------|-------|--------|
+| faithfulness | 5 | — |
+| completeness | 5 | — |
+| conciseness | 4 | — |
+| honesty | 5 | — |
+| status_accuracy | 5 | — |
+| voice | 5 | — |
 
-Read the conversation below and distill it into ONE Eureka as JSON.
+**Feedback:** This is a very strong extraction, capturing all critical details and nuances from the conversation. The structure is logical and the language is appropriate for an Ideary journal. Minor improvements could focus on slightly shortening a few bullet points for maximum conciseness.
 
-OUTPUT — return ONLY valid JSON, no prose, matching this shape:
+**Extracted:**
+```json
 {
-  "title": string,            // 2-5 words, the idea's name
-  "oneLiner": string,         // one crisp sentence describing the idea
-  "status": "ACTIVE" | "PARKED" | "DEAD" | "REVISIT",
-  "tags": string[],           // 2-5 short tags, e.g. ["EdTech","Consumer","Solo-hard"]
-  "sections": Section[]
+  "title": "Third-Party API Watch",
+  "one_liner": "Zero-config monitoring for third-party API dependencies, detecting real-traffic anomalies.",
+  "status": "active",
+  "tags": [
+    "API monitoring",
+    "DevOps",
+    "SaaS",
+    "Reliability",
+    "B2B"
+  ],
+  "spark": "Teams learn about third-party API incidents from angry customers, not monitoring. Existing solutions are manual or require custom setup.",
+  "case_for": [
+    "Addresses a consistent blind spot for engineering teams.",
+    "Zero-config setup simplifies adoption versus competitors.",
+    "Clear buyer: VPs/CTOs already spending on reliability.",
+    "Existing solutions don't focus on passive real-traffic."
+  ],
+  "case_against": [
+    "Crowdsourced data creates a chicken-and-egg problem.",
+    "Detection quality suffers for early customers without benchmarks."
+  ],
+  "key_insight": "The core challenge is distinguishing global API slowness from specific customer issues, requiring benchmark data.",
+  "verdict": "This addresses a real, underserved market gap. The next step is customer validation.",
+  "revisit_if": null,
+  "what_youd_need": [
+    "Connect to AWS or GCP logs.",
+    "Detect third-party API calls from logs.",
+    "Anomaly detection for latency spikes and error rates.",
+    "Benchmark data from public feeds or crowdsourcing."
+  ],
+  "next_step": "Talk to 10 engineering leads this month to validate the problem.",
+  "at_a_glance": [
+    {
+      "label": "Target Buyer",
+      "value": "VP Eng / CTO (Series A-C)"
+    },
+    {
+      "label": "Key Differentiator",
+      "value": "Zero-config, real-traffic anomaly detection"
+    },
+    {
+      "label": "Moat",
+      "value": "Crowdsourced benchmark data"
+    },
+    {
+      "label": "Validation Metric",
+      "value": "7/10 leads confirm problem"
+    }
+  ]
+}
+```
+
+### LocalStack Finder (5/5.0)
+
+**Scores:**
+| Criterion | Score | Reason |
+|-----------|-------|--------|
+| faithfulness | 5 | — |
+| completeness | 5 | — |
+| conciseness | 5 | — |
+| honesty | 5 | — |
+| status_accuracy | 5 | — |
+| voice | 5 | — |
+
+**Feedback:** This is an excellent extraction that perfectly captures the essence of the conversation. It is faithful, complete, concise, and accurately reflects the status and reasons for the idea's outcome. No specific improvements are needed; it serves as a strong example.
+
+**Extracted:**
+```json
+{
+  "title": "LocalStack Health Dashboard",
+  "one_liner": "A free dashboard to diagnose LocalStack service health and configuration issues.",
+  "status": "dead",
+  "tags": [
+    "Developer Tools",
+    "AWS",
+    "LocalStack",
+    "Open Source"
+  ],
+  "spark": "It's unclear which LocalStack services are configured, partially working, or broken during development.",
+  "case_for": [
+    "Every developer using LocalStack complains about this issue.",
+    "It would be free, unlike LocalStack Pro's paid features.",
+    "Addresses a clear diagnostic pain point for developers."
+  ],
+  "case_against": [
+    "No clear monetization path for a startup business.",
+    "Directly overlaps with LocalStack Pro's existing paid monitoring.",
+    "Likely scratching your own itch, not a broad market need."
+  ],
+  "key_insight": "This is an open-source project, not a viable startup product.",
+  "verdict": "This is not a business idea. It's better suited as an open-source script to solve a personal pain point.",
+  "revisit_if": "If the open-source project gains significant traction and reveals deeper developer needs.",
+  "what_youd_need": [
+    "A Python script to gather LocalStack diagnostics.",
+    "A GitHub repository for hosting and sharing the tool."
+  ],
+  "next_step": "Build the diagnostic script and publish it on GitHub.",
+  "at_a_glance": [
+    {
+      "label": "Monetization",
+      "value": "None"
+    },
+    {
+      "label": "Competition",
+      "value": "LocalStack Pro"
+    },
+    {
+      "label": "Scope",
+      "value": "Open Source Project"
+    },
+    {
+      "label": "Audience",
+      "value": "LocalStack Developers"
+    }
+  ]
+}
+```
+
+---
+
+## Winning Prompt
+
+```
+You are an extraction assistant for Ideary — a personal startup idea journal. Your job is to read a founder's brainstorming conversation and extract a structured Eureka entry.
+
+OUTPUT FORMAT (JSON only):
+{
+  "title": "2-4 word name for the idea",
+  "one_liner": "One tight sentence: what it is + the core angle (under 15 words)",
+  "status": "active" | "parked" | "dead" | "revisit",
+  "tags": ["2-5 tags: domain, audience, risk profile"],
+  "spark": "The original insight or problem that sparked this (1-2 sentences). Null if not stated.",
+  "case_for": ["3-5 bullets: strongest reasons this could work. Punchy, specific, under 20 words each. Null if not discussed."],
+  "case_against": ["3-5 bullets: strongest reasons this might fail. Honest, no softening, under 20 words each. Null if not discussed."],
+  "key_insight": "The single most important insight that reframes the whole idea (1 sentence). Null if none.",
+  "verdict": "1-2 punchy sentences: what the conversation concluded. Null if no conclusion.",
+  "revisit_if": "Specific conditions that would change the verdict. Null if not stated.",
+  "what_youd_need": ["Concrete requirements to actually build or validate. Null if not discussed."],
+  "next_step": "Single most important next action if mentioned. Null if not stated.",
+  "at_a_glance": [{"label": "X", "value": "Y"}]
 }
 
-Section is one of:
-  { "kind": "prose",     "heading": string, "text": string }
-  { "kind": "highlight", "heading": string, "text": string }   // for the single sharpest insight
-  { "kind": "bullets",   "heading": string, "bulletKind": "arrow"|"x"|"dot"|"question", "items": string[] }
-
-Use these headings when the content exists (omit a section if the conversation has nothing for it):
-  - "SPARK" (prose): what triggered the idea / the core premise
-  - "CASE FOR" (bullets, arrow): reasons it could work
-  - "CASE AGAINST" (bullets, x): reasons it might not
-  - "OPEN QUESTIONS" (bullets, question): unresolved questions
-  - "KEY INSIGHT" (highlight): the single most important realization
-  - "VERDICT" (prose): the honest conclusion
-  - "REVISIT IF" (bullets, dot, or prose): what would have to change to revive it
-
 STATUS RULES:
-  - ACTIVE  — the founder is excited and committing to build / next-step it
-  - PARKED  — a good idea blocked by timing, scope, or competition; shelved not killed
-  - DEAD    — concluded not worth pursuing; fundamental problems
-  - REVISIT — explicitly deferred pending a specific future trigger
+- "active": founder is energized, no fatal blockers, clear next steps discussed
+- "parked": interesting idea but timing, resources, or a specific problem needs solving first
+- "dead": fatal flaw found — legal, competitive, technical, or economic
+- "revisit": explicitly waiting for a specific external condition to change
 
-VOICE: terse, first-person founder's-notebook. Direct and honest. No marketing fluff, no hedging, no "this could potentially." Preserve the conversation's real skepticism — never make a dead idea sound alive.
+VOICE RULES:
+- Bullets under 20 words. No leading bullet characters or dashes in the text.
+- Direct and honest. Don't soften bad news.
+- Startup-smart: assume the reader understands markets, unit economics, competition.
+- Use second person ("you", "your") for personal notes where natural.
+- No corporate speak.
 
-CONVERSATION:
-{{CONVERSATION}}
+FAITHFULNESS RULES:
+- Only extract claims that appear in the conversation.
+- Never invent numbers, competitor names, or market data not explicitly mentioned.
+- If the founder didn't discuss something, use null — don't fill gaps with guesses.
 ```
