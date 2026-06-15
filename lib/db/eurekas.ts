@@ -1,4 +1,4 @@
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase, getSupabaseAdmin } from "@/lib/supabase";
 import type { Eureka, EurekaSection, EurekaStatus } from "@/lib/types/eureka";
 
 // ── DB row types ──────────────────────────────────────────────────────────────
@@ -151,7 +151,7 @@ export function eurekaToDbFields(e: Eureka): Partial<DbInsert> {
 // ── CRUD ──────────────────────────────────────────────────────────────────────
 
 export async function getEurekas(): Promise<Eureka[]> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await getSupabaseAdmin()
     .from("eurekas")
     .select("*")
     .order("captured_at", { ascending: false });
@@ -161,7 +161,7 @@ export async function getEurekas(): Promise<Eureka[]> {
 }
 
 export async function getEurekaById(id: string): Promise<Eureka | null> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await getSupabaseAdmin()
     .from("eurekas")
     .select("*")
     .eq("id", id)

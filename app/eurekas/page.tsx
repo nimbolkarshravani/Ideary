@@ -88,10 +88,12 @@ async function EurekasContent({
   const isEmpty = params.empty === "true";
 
   let eurekas: Eureka[] = [];
+  let fetchError: string | null = null;
   if (!isEmpty) {
     try {
       eurekas = await getEurekas();
-    } catch {
+    } catch (err) {
+      fetchError = err instanceof Error ? err.message : String(err);
       eurekas = [];
     }
   }
@@ -168,8 +170,13 @@ async function EurekasContent({
         )}
 
         {(isEmpty || eurekas.length === 0) && (
-          <div style={{ display: "flex", justifyContent: "center", paddingTop: 80, paddingBottom: 80 }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 80, paddingBottom: 80, gap: 24 }}>
             <PencilIllustration />
+            {fetchError && (
+              <pre style={{ fontFamily: "monospace", fontSize: 12, color: "#c0392b", background: "#fdf2f2", border: "1px solid #f5c6cb", borderRadius: 8, padding: "12px 20px", maxWidth: 700, overflowX: "auto", whiteSpace: "pre-wrap" }}>
+                {fetchError}
+              </pre>
+            )}
           </div>
         )}
 
