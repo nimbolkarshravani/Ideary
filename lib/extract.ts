@@ -1,6 +1,10 @@
 import { EXTRACTION_PROMPT } from "./extraction-prompt";
+import { callGemini, parseJson } from "./gemini";
 
-const MODEL = "gemini-2.5-flash";
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
 
 export interface ExtractionOutput {
   title: string;
@@ -18,49 +22,24 @@ export interface ExtractionOutput {
   at_a_glance?: { label: string; value: string }[] | null;
 }
 
-function apiKey(): string {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) throw new Error("GEMINI_API_KEY is not set");
-  return key;
-}
-
-function extractJson(raw: string): unknown {
-  const stripped = raw
-    .replace(/^```(?:json)?\s*/m, "")
-    .replace(/\s*```\s*$/m, "")
-    .trim();
-  return JSON.parse(stripped);
-}
-
-/** Low-level text generation call to Gemini. */
-export async function callGemini(prompt: string, thinkingBudget = 1024): Promise<string> {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey()}`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.4, thinkingConfig: { thinkingBudget } },
-    }),
-  });
-
-  if (!res.ok) {
-    throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  }
-
-  const data = (await res.json()) as {
-    candidates: { content: { parts: { text?: string; thought?: boolean }[] } }[];
-  };
-  const parts = data.candidates[0].content.parts;
-  const textPart = parts.find((p) => !p.thought) ?? parts[parts.length - 1];
-  return textPart.text ?? "";
+/** Turn a structured message list into a plain transcript for the model. */
+export function messagesToTranscript(messages: ChatMessage[]): string {
+  return messages
+    .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`)
+    .join("\n\n");
 }
 
 /**
- * Run Gemini extraction on a raw conversation and return the structured Eureka.
- * This is the same code path the eval harness uses, with the winning prompt.
+ * Run Gemini extraction on a conversation and return the structured Eureka.
+ * Accepts either a raw transcript string or a list of chat messages.
+ * Same code path the eval harness validated (winning prompt, Gemini 2.5 Flash).
  */
-export async function extractEureka(conversation: string): Promise<ExtractionOutput> {
+export async function extractEureka(
+  input: string | ChatMessage[],
+): Promise<ExtractionOutput> {
+  const conversation =
+    typeof input === "string" ? input : messagesToTranscript(input);
+
   const full = `${EXTRACTION_PROMPT}
 
 --- CONVERSATION ---
@@ -69,6 +48,10 @@ ${conversation}
 
 Output only valid JSON. No markdown fences, no explanation.`;
 
-  const raw = await callGemini(full, 2048);
-  return extractJson(raw) as ExtractionOutput;
+  const raw = await callGemini(full, {
+    json: true,
+    thinkingBudget: 2048,
+    temperature: 0.4,
+  });
+  return parseJson<ExtractionOutput>(raw);
 }

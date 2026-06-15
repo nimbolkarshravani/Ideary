@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let _client: SupabaseClient | null = null;
+let _adminClient: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient {
   if (!_client) {
@@ -10,4 +11,15 @@ export function getSupabase(): SupabaseClient {
     );
   }
   return _client;
+}
+
+// Server-side only — uses service role key, bypasses RLS and host restrictions.
+export function getSupabaseAdmin(): SupabaseClient {
+  if (!_adminClient) {
+    _adminClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
+  }
+  return _adminClient;
 }
