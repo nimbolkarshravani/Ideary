@@ -13,7 +13,7 @@ export function getSupabase(): SupabaseClient {
   return _client;
 }
 
-// Server-side only — uses service role key, bypasses RLS and host restrictions
+// Server-side only — uses service role key, bypasses RLS and host restrictions.
 export function getSupabaseAdmin(): SupabaseClient {
   if (!_adminClient) {
     _adminClient = createClient(
