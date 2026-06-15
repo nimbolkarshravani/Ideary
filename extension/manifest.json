@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Ideary — Capture Eurekas",
+  "version": "0.1.0",
+  "description": "Capture your Claude conversations into Ideary as structured Eurekas.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": [
+    "https://claude.ai/*",
+    "https://ideary.vercel.app/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Save as Eureka"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://claude.ai/*"],
+      "js": ["providers/claude.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
