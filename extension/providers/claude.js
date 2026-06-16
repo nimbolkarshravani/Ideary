@@ -34,6 +34,11 @@
     // A single Claude (assistant) turn. This class wraps Claude's rendered
     // markdown response.
     ASSISTANT_MESSAGE: ".font-claude-message",
+
+    // Streaming indicator — Claude shows this while a response is still being
+    // generated. Capture is blocked when this is present so the transcript
+    // isn't truncated mid-response.
+    STREAMING: '[data-is-streaming="true"], .result-streaming',
   };
 
   function matches(url) {
@@ -51,6 +56,14 @@
     if (!conversation_id) {
       throw new Error(
         "Not on a Claude conversation page (expected claude.ai/chat/<id>).",
+      );
+    }
+
+    // Block capture while Claude is still generating — the last response would
+    // be truncated, giving Gemini an incomplete transcript to work with.
+    if (document.querySelector(SEL.STREAMING)) {
+      throw new Error(
+        "Claude is still responding. Wait for it to finish, then capture.",
       );
     }
 
