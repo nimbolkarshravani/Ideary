@@ -100,7 +100,7 @@ export async function POST(request: Request) {
   // 4 + 5. Extract and apply. On failure, the raw conversation is still saved.
   try {
     const extraction = await extractEureka(messages);
-    await applyExtraction(id, extraction);
+    await applyExtraction(id, extraction, messages);
   } catch (err) {
     console.error("Extraction failed for eureka", id, err);
     return Response.json({ eureka_id: id, status: "extraction_failed" });
