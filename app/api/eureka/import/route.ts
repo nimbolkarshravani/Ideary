@@ -1,8 +1,5 @@
 import { extractEureka, type ChatMessage } from "@/lib/extract";
-import {
-  saveRawConversation,
-  applyExtraction,
-} from "@/lib/db/import";
+import { saveRawConversation, applyExtraction } from "@/lib/db/import";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
