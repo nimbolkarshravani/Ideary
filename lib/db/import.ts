@@ -74,13 +74,25 @@ export async function saveRawConversation(
 export async function applyExtraction(
   id: string,
   e: ExtractionOutput,
+  messages?: ChatMessage[],
 ): Promise<void> {
   const status = VALID_STATUS.has(e.status) ? e.status : "active";
+
+  // Gemini occasionally returns null for title on ambiguous transcripts.
+  // Fall back to the first user message (truncated) so the row is never "Untitled".
+  let title = e.title || null;
+  if (!title && messages) {
+    const firstUser = messages.find((m) => m.role === "user");
+    if (firstUser) {
+      title = firstUser.content.slice(0, 60).replace(/\s+/g, " ").trim() + (firstUser.content.length > 60 ? "…" : "");
+    }
+  }
+  title = title || "Untitled";
 
   const { error } = await getSupabaseAdmin()
     .from("eurekas")
     .update({
-      title: e.title ?? "Untitled",
+      title,
       one_liner: e.one_liner ?? "",
       status,
       tags: e.tags ?? [],
