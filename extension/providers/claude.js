@@ -8,10 +8,11 @@
  *   matches(url: string): boolean
  *       — true if this provider can handle the current page.
  *
- *   extract(): { provider, conversation_id, messages }
+ *   extract(): { provider, conversation_id, messages, _debug }
  *       — reads the conversation from the DOM. Throws an Error (with a
  *         human-readable message) if it can't. `messages` is an ordered
  *         array of { role: "user" | "assistant", content: string }.
+ *         `_debug` carries counts for display in the popup.
  *
  * To add ChatGPT or Gemini later, drop a providers/chatgpt.js (or gemini.js)
  * that follows the same shape, register it on window.IdearyExtractors, and
@@ -31,14 +32,21 @@
     // A single user turn. Claude tags the user's message bubble with this.
     USER_MESSAGE: '[data-testid="user-message"]',
 
-    // A single Claude (assistant) turn. This class wraps Claude's rendered
-    // markdown response.
-    ASSISTANT_MESSAGE: ".font-claude-message",
+    // A single Claude (assistant) turn.
+    // We try several selectors; the first one that yields results wins.
+    // When Claude changes its DOM, add the new selector to the front of this list.
+    ASSISTANT_MESSAGE_CANDIDATES: [
+      '.font-claude-message',          // used in 2024-2025
+      '[data-testid="ai-message"]',    // seen in some versions
+      '[data-testid="assistant-message"]',
+      '.claude-message',
+      '[data-is-claude="true"]',
+    ],
 
     // Streaming indicator — Claude shows this while a response is still being
     // generated. Capture is blocked when this is present so the transcript
     // isn't truncated mid-response.
-    STREAMING: '[data-is-streaming="true"], .result-streaming',
+    STREAMING: '[data-is-streaming="true"], .result-streaming, [data-loading="true"]',
   };
 
   function matches(url) {
@@ -48,6 +56,14 @@
   function getConversationId(url) {
     const m = (url || "").match(SEL.CONVERSATION_URL);
     return m ? m[1] : null;
+  }
+
+  /** Return the first selector candidate that matches at least one element. */
+  function findAssistantSelector() {
+    for (const sel of SEL.ASSISTANT_MESSAGE_CANDIDATES) {
+      if (document.querySelector(sel)) return sel;
+    }
+    return null;
   }
 
   function extract() {
@@ -67,14 +83,25 @@
       );
     }
 
-    // querySelectorAll returns nodes in document order, so a combined query
-    // gives us the turns already interleaved in conversation order.
-    const combined = `${SEL.USER_MESSAGE}, ${SEL.ASSISTANT_MESSAGE}`;
-    const nodes = Array.from(document.querySelectorAll(combined));
+    const assistantSel = findAssistantSelector();
+
+    // Build message list from user turns first to check we have something.
+    const userNodes = Array.from(document.querySelectorAll(SEL.USER_MESSAGE));
+    const assistantNodes = assistantSel
+      ? Array.from(document.querySelectorAll(assistantSel))
+      : [];
+
+    // Merge all nodes in document order with their known role.
+    const taggedNodes = [
+      ...userNodes.map((n) => ({ node: n, role: "user" })),
+      ...assistantNodes.map((n) => ({ node: n, role: "assistant" })),
+    ].sort((a, b) => {
+      const pos = a.node.compareDocumentPosition(b.node);
+      return pos & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+    });
 
     const messages = [];
-    for (const node of nodes) {
-      const role = node.matches(SEL.USER_MESSAGE) ? "user" : "assistant";
+    for (const { node, role } of taggedNodes) {
       const content = (node.innerText || "").trim();
       if (content) messages.push({ role, content });
     }
@@ -82,11 +109,24 @@
     if (messages.length === 0) {
       throw new Error(
         "No messages found — Claude's DOM may have changed. " +
-          "Update the selectors at the top of providers/claude.js.",
+          "Check the console for debug info, or update the selectors in providers/claude.js.",
       );
     }
 
-    return { provider: "claude", conversation_id, messages };
+    const userCount = messages.filter((m) => m.role === "user").length;
+    const assistantCount = messages.filter((m) => m.role === "assistant").length;
+
+    console.log(
+      `[Ideary] Captured ${messages.length} messages — ${userCount} user, ${assistantCount} assistant. ` +
+      `Assistant selector: ${assistantSel || "NONE — only user messages captured!"}`,
+    );
+
+    return {
+      provider: "claude",
+      conversation_id,
+      messages,
+      _debug: { userCount, assistantCount, assistantSel },
+    };
   }
 
   window.IdearyExtractors = window.IdearyExtractors || {};

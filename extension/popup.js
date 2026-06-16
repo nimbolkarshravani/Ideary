@@ -63,8 +63,16 @@ captureBtn.addEventListener("click", async () => {
       );
     }
 
+    // Show what was captured so a selector failure is immediately visible.
+    const d = extractRes.data._debug || {};
+    const assistantCount = d.assistantCount || 0;
+    const totalCount = (d.userCount || 0) + assistantCount;
+    const countLine = assistantCount === 0
+      ? `⚠ ${d.userCount || 0} user messages, 0 assistant — selector may be wrong`
+      : `${totalCount} messages (${d.userCount} user + ${assistantCount} assistant)`;
+    setStatus(countLine + "<br/>saving your eureka…", "loading");
+
     // 2. Send to Ideary.
-    setStatus("saving your eureka…", "loading");
     const importRes = await chrome.runtime.sendMessage({
       type: "IDEARY_IMPORT",
       payload: extractRes.data,
