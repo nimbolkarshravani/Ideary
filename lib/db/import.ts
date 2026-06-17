@@ -1,7 +1,7 @@
 import { getSupabaseAdmin } from "@/lib/supabase";
 import type { ChatMessage, ExtractionOutput } from "@/lib/extract";
 
-const VALID_STATUS = new Set(["active", "parked", "dead", "revisit"]);
+const VALID_STATUS = new Set(["exploring", "parked", "dead", "building"]);
 
 export interface ImportIdentity {
   provider: string;
@@ -50,8 +50,6 @@ export async function saveRawConversation(
     return { id: existingId, isNew: false };
   }
 
-  // New conversation: insert a placeholder row that holds the raw source.
-  // Extraction fills in the real fields next; if it fails, the source survives.
   const { data, error } = await db
     .from("eurekas")
     .insert({
@@ -61,7 +59,7 @@ export async function saveRawConversation(
       raw_conversation: identity.messages,
       title: "Imported conversation",
       one_liner: "",
-      status: "active",
+      status: "exploring",
     })
     .select("id")
     .single();
@@ -76,10 +74,8 @@ export async function applyExtraction(
   e: ExtractionOutput,
   messages?: ChatMessage[],
 ): Promise<void> {
-  const status = VALID_STATUS.has(e.status) ? e.status : "active";
+  const status = VALID_STATUS.has(e.status) ? e.status : "parked";
 
-  // Gemini occasionally returns null for title on ambiguous transcripts.
-  // Fall back to the first user message (truncated) so the row is never "Untitled".
   let title = e.title || null;
   if (!title && messages) {
     const firstUser = messages.find((m) => m.role === "user");
@@ -97,12 +93,12 @@ export async function applyExtraction(
       status,
       tags: e.tags ?? [],
       spark: e.spark ?? null,
-      case_for: e.case_for ?? null,
-      case_against: e.case_against ?? null,
+      why_it_could_work: e.why_it_could_work ?? null,
+      why_it_might_not: e.why_it_might_not ?? null,
       key_insight: e.key_insight ?? null,
       verdict: e.verdict ?? null,
       revisit_if: e.revisit_if ?? null,
-      what_youd_need: e.what_youd_need ?? null,
+      what_itd_take: e.what_itd_take ?? null,
       next_step: e.next_step ?? null,
       at_a_glance: e.at_a_glance ?? null,
     })

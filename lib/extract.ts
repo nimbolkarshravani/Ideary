@@ -6,20 +6,27 @@ export interface ChatMessage {
   content: string;
 }
 
+export interface AtAGlance {
+  effort?: string;
+  cost?: string;
+  fit?: string;
+  time?: string;
+}
+
 export interface ExtractionOutput {
   title: string;
   one_liner: string;
-  status: "active" | "parked" | "dead" | "revisit";
+  status: "exploring" | "parked" | "dead" | "building";
   tags: string[];
   spark?: string | null;
-  case_for?: string[] | null;
-  case_against?: string[] | null;
+  why_it_could_work?: string[] | null;
+  why_it_might_not?: string[] | null;
   key_insight?: string | null;
-  verdict?: string | null;
+  verdict: string;
   revisit_if?: string | null;
-  what_youd_need?: string[] | null;
+  what_itd_take?: string[] | null;
   next_step?: string | null;
-  at_a_glance?: { label: string; value: string }[] | null;
+  at_a_glance?: AtAGlance | null;
 }
 
 /** Turn a structured message list into a plain transcript for the model. */
@@ -32,7 +39,6 @@ export function messagesToTranscript(messages: ChatMessage[]): string {
 /**
  * Run Gemini extraction on a conversation and return the structured Eureka.
  * Accepts either a raw transcript string or a list of chat messages.
- * Same code path the eval harness validated (winning prompt, Gemini 2.5 Flash).
  */
 export async function extractEureka(
   input: string | ChatMessage[],

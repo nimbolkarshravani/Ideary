@@ -13,15 +13,14 @@ export interface DbRow {
   updated_at: string;
   source_conversation: string | null;
   spark: string | null;
-  case_for: string[] | null;
-  case_against: string[] | null;
+  why_it_could_work: string[] | null;
+  why_it_might_not: string[] | null;
   key_insight: string | null;
   verdict: string | null;
   revisit_if: string | null;
-  what_youd_need: string[] | null;
-  numbers: { label: string; value: string }[] | null;
+  what_itd_take: string[] | null;
   next_step: string | null;
-  at_a_glance: { label: string; value: string }[] | null;
+  at_a_glance: Record<string, string> | null;
   custom_notes: EurekaSection[] | null;
 }
 
@@ -29,18 +28,20 @@ export type DbInsert = Omit<DbRow, "id" | "captured_at" | "updated_at">;
 
 // ── Heading → column mapping ──────────────────────────────────────────────────
 
-// All headings that are stored in named columns (vs custom_notes)
 const NAMED: Record<string, keyof DbInsert> = {
+  "CONTEXT": "spark",
   "SPARK": "spark",
-  "CASE FOR": "case_for",
-  "WHY IT COULD WORK": "case_for",
-  "CASE AGAINST": "case_against",
-  "WHY IT MIGHT NOT": "case_against",
+  "CASE FOR": "why_it_could_work",
+  "WHY IT COULD WORK": "why_it_could_work",
+  "CASE AGAINST": "why_it_might_not",
+  "WHY IT MIGHT NOT": "why_it_might_not",
   "KEY INSIGHT": "key_insight",
   "VERDICT": "verdict",
+  "CONDITIONS TO REVISIT": "revisit_if",
   "REVISIT IF": "revisit_if",
-  "WHAT YOU'D NEED": "what_youd_need",
-  "WHAT YOU NEED": "what_youd_need",
+  "REQUIREMENTS": "what_itd_take",
+  "WHAT IT'D TAKE": "what_itd_take",
+  "WHAT YOU'D NEED": "what_itd_take",
   "AT A GLANCE": "at_a_glance",
   "NEXT STEPS": "next_step",
   "NEXT STEP": "next_step",
@@ -50,10 +51,13 @@ const NAMED: Record<string, keyof DbInsert> = {
 
 function statusFromDb(raw: string): EurekaStatus {
   const map: Record<string, EurekaStatus> = {
-    active: "ACTIVE",
+    exploring: "EXPLORING",
     parked: "PARKED",
     dead: "DEAD",
-    revisit: "REVISIT",
+    building: "BUILDING",
+    // Legacy compat
+    active: "EXPLORING",
+    revisit: "BUILDING",
   };
   return map[raw] ?? "PARKED";
 }
@@ -70,23 +74,29 @@ export function dbRowToEureka(row: DbRow): Eureka {
   const sections: EurekaSection[] = [];
 
   if (row.spark)
-    sections.push({ kind: "prose", heading: "SPARK", text: row.spark });
-  if (row.case_for?.length)
-    sections.push({ kind: "bullets", heading: "CASE FOR", bulletKind: "arrow", items: row.case_for });
-  if (row.case_against?.length)
-    sections.push({ kind: "bullets", heading: "CASE AGAINST", bulletKind: "x", items: row.case_against });
+    sections.push({ kind: "prose", heading: "Context", text: row.spark });
+  if (row.why_it_could_work?.length)
+    sections.push({ kind: "bullets", heading: "Case For", bulletKind: "arrow", items: row.why_it_could_work });
+  if (row.why_it_might_not?.length)
+    sections.push({ kind: "bullets", heading: "Case Against", bulletKind: "x", items: row.why_it_might_not });
   if (row.key_insight)
-    sections.push({ kind: "highlight", heading: "KEY INSIGHT", text: row.key_insight });
+    sections.push({ kind: "highlight", heading: "Key Insight", text: row.key_insight });
   if (row.verdict)
-    sections.push({ kind: "prose", heading: "VERDICT", text: row.verdict });
+    sections.push({ kind: "prose", heading: "Verdict", text: row.verdict });
   if (row.revisit_if)
-    sections.push({ kind: "prose", heading: "REVISIT IF", text: row.revisit_if });
+    sections.push({ kind: "prose", heading: "Conditions to Revisit", text: row.revisit_if });
+  if (row.what_itd_take?.length)
+    sections.push({ kind: "bullets", heading: "Requirements", bulletKind: "dot", items: row.what_itd_take });
   if (row.next_step)
-    sections.push({ kind: "prose", heading: "NEXT STEPS", text: row.next_step });
-  if (row.what_youd_need?.length)
-    sections.push({ kind: "bullets", heading: "WHAT YOU'D NEED", bulletKind: "dot", items: row.what_youd_need, column: "right" });
-  if (row.at_a_glance?.length)
-    sections.push({ kind: "glance", heading: "AT A GLANCE", rows: row.at_a_glance, column: "right" });
+    sections.push({ kind: "prose", heading: "Next Step", text: row.next_step });
+  if (row.at_a_glance && Object.keys(row.at_a_glance).length > 0) {
+    const GLANCE_LABELS: Record<string, string> = { effort: "Effort", cost: "Cost", fit: "Fit", time: "Time" };
+    const rows = Object.entries(row.at_a_glance)
+      .filter(([, v]) => v)
+      .map(([k, v]) => ({ label: GLANCE_LABELS[k] || k, value: v }));
+    if (rows.length > 0)
+      sections.push({ kind: "glance", heading: "At a Glance", rows, column: "right" });
+  }
   if (row.custom_notes?.length)
     sections.push(...row.custom_notes);
 
@@ -111,7 +121,7 @@ function statusToDb(s: EurekaStatus): string {
 export function eurekaToDbFields(e: Eureka): Partial<DbInsert> {
   const namedBullets: Record<string, string[]> = {};
   const namedProse: Record<string, string> = {};
-  const namedGlance: Record<string, { label: string; value: string }[]> = {};
+  const namedGlance: Record<string, Record<string, string>> = {};
   const extra: EurekaSection[] = [];
 
   for (const section of e.sections) {
@@ -125,8 +135,11 @@ export function eurekaToDbFields(e: Eureka): Partial<DbInsert> {
     if (section.kind === "bullets") namedBullets[col] = section.items;
     else if (section.kind === "prose") namedProse[col] = section.text;
     else if (section.kind === "highlight") namedProse[col] = section.text;
-    else if (section.kind === "glance") namedGlance[col] = section.rows;
-    else extra.push(section);
+    else if (section.kind === "glance") {
+      const obj: Record<string, string> = {};
+      for (const row of section.rows) obj[row.label.toLowerCase()] = row.value;
+      namedGlance[col] = obj;
+    } else extra.push(section);
   }
 
   return {
@@ -136,14 +149,14 @@ export function eurekaToDbFields(e: Eureka): Partial<DbInsert> {
     tags: e.tags,
     source_conversation: e.conversationUrl ?? null,
     spark: (namedProse["spark"] as string) ?? null,
-    case_for: (namedBullets["case_for"] as string[]) ?? null,
-    case_against: (namedBullets["case_against"] as string[]) ?? null,
+    why_it_could_work: (namedBullets["why_it_could_work"] as string[]) ?? null,
+    why_it_might_not: (namedBullets["why_it_might_not"] as string[]) ?? null,
     key_insight: (namedProse["key_insight"] as string) ?? null,
     verdict: (namedProse["verdict"] as string) ?? null,
     revisit_if: (namedProse["revisit_if"] as string) ?? null,
-    what_youd_need: (namedBullets["what_youd_need"] as string[]) ?? null,
+    what_itd_take: (namedBullets["what_itd_take"] as string[]) ?? null,
     next_step: (namedProse["next_step"] as string) ?? null,
-    at_a_glance: (namedGlance["at_a_glance"] as { label: string; value: string }[]) ?? null,
+    at_a_glance: (namedGlance["at_a_glance"] as Record<string, string>) ?? null,
     custom_notes: extra.length > 0 ? extra : null,
   };
 }
