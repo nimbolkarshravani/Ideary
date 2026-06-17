@@ -3,7 +3,7 @@ export interface TestConversation {
   title: string;
   text: string;
   gold: {
-    status: "active" | "parked" | "dead" | "revisit";
+    status: "exploring" | "parked" | "dead" | "building";
     must_capture: string[];
     must_not_hallucinate: string[];
   };
@@ -91,7 +91,7 @@ User: I want to talk to 10 engineering leads this month. If 7 out of 10 say they
 
 Claude: That's a clean validation criterion. Go do it.`,
     gold: {
-      status: "active",
+      status: "exploring",
       must_capture: [
         "zero-config differentiation from Datadog",
         "crowdsourcing chicken-and-egg as both moat and problem",
