@@ -101,7 +101,7 @@ async function EurekasContent({
   const total = eurekas.length;
   const parked = eurekas.filter((e) => e.status === "PARKED").length;
   const dead = eurekas.filter((e) => e.status === "DEAD").length;
-  const active = eurekas.filter((e) => e.status === "ACTIVE").length;
+  const exploring = eurekas.filter((e) => e.status === "EXPLORING").length;
 
   return (
     <div
@@ -141,13 +141,13 @@ async function EurekasContent({
               <Stat count={total} label="captured" pip="#8B2447" />
               <Stat count={parked} label="parked" pip="#F5C518" />
               <Stat count={dead} label="dead" pip="#E57373" />
-              <Stat count={active} label="active" pip="#66BB6A" />
+              <Stat count={exploring} label="exploring" pip="#66BB6A" />
             </div>
 
             {/* Filter chips */}
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 36 }}>
               <FilterChip label="all" active />
-              <FilterChip label="active" />
+              <FilterChip label="exploring" />
               <FilterChip label="parked" />
               <FilterChip label="dead" />
             </div>

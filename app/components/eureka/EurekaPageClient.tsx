@@ -277,12 +277,12 @@ function DeleteDialog({ onConfirm, onCancel }: { onConfirm: () => void; onCancel
 
 const ADD_OPTIONS: { label: string; section: EurekaSection }[] = [
   { label: "✏ custom note", section: { kind: "prose", heading: "NOTE", text: "Add your thoughts here." } },
-  { label: "→ pros list", section: { kind: "bullets", heading: "CASE FOR", bulletKind: "arrow", items: [""] } },
-  { label: "× cons list", section: { kind: "bullets", heading: "CASE AGAINST", bulletKind: "x", items: [""] } },
-  { label: "— next steps", section: { kind: "bullets", heading: "NEXT STEPS", bulletKind: "dot", items: [""] } },
-  { label: "⬡ what you'd need", section: { kind: "bullets", heading: "WHAT YOU'D NEED", bulletKind: "dot", items: [""] } },
-  { label: "◈ at a glance", section: { kind: "glance", heading: "AT A GLANCE", rows: [{ label: "Capital", value: "—" }] } },
-  { label: "★ key insight", section: { kind: "highlight", heading: "KEY INSIGHT", text: "The key thing you realized." } },
+  { label: "→ case for", section: { kind: "bullets", heading: "Case For", bulletKind: "arrow", items: [""] } },
+  { label: "× case against", section: { kind: "bullets", heading: "Case Against", bulletKind: "x", items: [""] } },
+  { label: "★ key insight", section: { kind: "highlight", heading: "Key Insight", text: "The key thing you realized." } },
+  { label: "⬡ requirements", section: { kind: "bullets", heading: "Requirements", bulletKind: "dot", items: [""] } },
+  { label: "— next step", section: { kind: "prose", heading: "Next Step", text: "" } },
+  { label: "◈ at a glance", section: { kind: "glance", heading: "At a Glance", rows: [{ label: "Effort", value: "—" }] } },
 ];
 
 function AddSectionMenu({ onAdd }: { onAdd: (s: EurekaSection) => void }) {
@@ -477,7 +477,7 @@ export default function EurekaPageClient({ initial }: { initial: Eureka }) {
   // Alias so all existing call sites just need s/setEureka/applyAndPersist/
   const setEureka = applyAndPersist;
 
-  const STATUS_CYCLE: Array<Eureka["status"]> = ["ACTIVE", "PARKED", "DEAD", "REVISIT"];
+  const STATUS_CYCLE: Array<Eureka["status"]> = ["EXPLORING", "PARKED", "DEAD", "BUILDING"];
   const statusColor: "yellow" | "red" = eureka.status === "DEAD" ? "red" : "yellow";
   const cycleStatus = () =>
     setEureka((e) => ({

@@ -5,10 +5,10 @@ import rough from "roughjs";
 import Link from "next/link";
 
 const STATUS_COLORS: Record<string, { fill: string; stroke: string }> = {
-  PARKED:  { fill: "#FEF3A7", stroke: "#8B2447" },
-  DEAD:    { fill: "#FFCDD2", stroke: "#8B2447" },
-  ACTIVE:  { fill: "#D4EDDA", stroke: "#8B2447" },
-  REVISIT: { fill: "#E8D5FA", stroke: "#8B2447" },
+  PARKED:    { fill: "#FEF3A7", stroke: "#8B2447" },
+  DEAD:      { fill: "#FFCDD2", stroke: "#8B2447" },
+  EXPLORING: { fill: "#D4EDDA", stroke: "#8B2447" },
+  BUILDING:  { fill: "#E8D5FA", stroke: "#8B2447" },
 };
 
 interface EurekaCardProps {
