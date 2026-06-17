@@ -1,5 +1,6 @@
 import { EXTRACTION_PROMPT } from "./extraction-prompt";
 import { callGemini, parseJson } from "./gemini";
+import type { EurekaSection } from "./types/eureka";
 
 export interface ChatMessage {
   role: "user" | "assistant";
@@ -20,6 +21,29 @@ export interface ExtractionOutput {
   what_youd_need?: string[] | null;
   next_step?: string | null;
   at_a_glance?: { label: string; value: string }[] | null;
+}
+
+export function extractionToSections(e: ExtractionOutput): EurekaSection[] {
+  const sections: EurekaSection[] = [];
+  if (e.spark)
+    sections.push({ kind: "prose", heading: "SPARK", text: e.spark });
+  if (e.case_for?.length)
+    sections.push({ kind: "bullets", heading: "CASE FOR", bulletKind: "arrow", items: e.case_for });
+  if (e.case_against?.length)
+    sections.push({ kind: "bullets", heading: "CASE AGAINST", bulletKind: "x", items: e.case_against });
+  if (e.key_insight)
+    sections.push({ kind: "highlight", heading: "KEY INSIGHT", text: e.key_insight });
+  if (e.verdict)
+    sections.push({ kind: "prose", heading: "VERDICT", text: e.verdict });
+  if (e.revisit_if)
+    sections.push({ kind: "prose", heading: "REVISIT IF", text: e.revisit_if });
+  if (e.next_step)
+    sections.push({ kind: "prose", heading: "NEXT STEPS", text: e.next_step });
+  if (e.what_youd_need?.length)
+    sections.push({ kind: "bullets", heading: "WHAT YOU'D NEED", bulletKind: "dot", items: e.what_youd_need, column: "right" });
+  if (e.at_a_glance?.length)
+    sections.push({ kind: "glance", heading: "AT A GLANCE", rows: e.at_a_glance, column: "right" });
+  return sections;
 }
 
 /** Turn a structured message list into a plain transcript for the model. */

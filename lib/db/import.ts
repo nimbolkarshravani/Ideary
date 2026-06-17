@@ -1,5 +1,6 @@
 import { getSupabaseAdmin } from "@/lib/supabase";
 import type { ChatMessage, ExtractionOutput } from "@/lib/extract";
+import { extractionToSections } from "@/lib/extract";
 
 const VALID_STATUS = new Set(["active", "parked", "dead", "revisit"]);
 
@@ -62,6 +63,7 @@ export async function saveRawConversation(
       title: "Imported conversation",
       one_liner: "",
       status: "active",
+      sections: [],
     })
     .select("id")
     .single();
@@ -96,15 +98,7 @@ export async function applyExtraction(
       one_liner: e.one_liner ?? "",
       status,
       tags: e.tags ?? [],
-      spark: e.spark ?? null,
-      case_for: e.case_for ?? null,
-      case_against: e.case_against ?? null,
-      key_insight: e.key_insight ?? null,
-      verdict: e.verdict ?? null,
-      revisit_if: e.revisit_if ?? null,
-      what_youd_need: e.what_youd_need ?? null,
-      next_step: e.next_step ?? null,
-      at_a_glance: e.at_a_glance ?? null,
+      sections: extractionToSections(e),
     })
     .eq("id", id);
 
